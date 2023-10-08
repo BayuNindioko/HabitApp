@@ -1,13 +1,19 @@
 package com.example.habitapp.Login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
 import android.view.MenuItem
 import android.view.View
+import com.example.habitapp.MainActivity
 import com.example.habitapp.R
 import com.example.habitapp.databinding.ActivityLoginBinding
 import com.example.habitapp.databinding.ActivitySignUpBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.HashMap
+import android.widget.Toast
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
@@ -27,19 +33,51 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun signUp(){
+        val name = binding.usernameEditText.text.toString()
         val email = binding.emailEditText.text.toString()
         val password = binding.passwordEditText.text.toString()
         val confirmPassword = binding.confirmPasswordEditText.text.toString()
 
         if (checkForm()) {
             binding.progressBar3.visibility = View.VISIBLE
-            //Firebase auth signup taro sini
 
-//            kalo udah selesai login ilangin progressbar pake
-//            binding.progressBar.visibility = View.GONE
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = FirebaseAuth.getInstance().currentUser
+                    val userUID = user?.uid
+
+                    val db = FirebaseFirestore.getInstance()
+                    val userDocument = HashMap<String, Any>()
+                    userDocument["nama"] = name
+
+                    if (userUID != null) {
+                        db.collection("Users")
+                            .document(userUID)
+                            .set(userDocument)
+                            .addOnSuccessListener {
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(
+                                    this,
+                                    "Gagal menyimpan data pengguna ke Firestore: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                binding.progressBar3.visibility = View.GONE
+                            }
+                    }
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Gagal membuat akun Firebase: ${task.exception?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    binding.progressBar3.visibility = View.GONE
+                }
+            }
         }
     }
 

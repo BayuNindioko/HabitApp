@@ -8,6 +8,9 @@ import android.view.View
 import com.example.habitapp.MainActivity
 import com.example.habitapp.R
 import com.example.habitapp.databinding.ActivityLoginBinding
+import android.widget.Toast
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -16,11 +19,11 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        FirebaseApp.initializeApp(this)
 
         //logic buat cek udah login atau belum, kalo udah pindah ke main
 //        val currentUser = FirebaseAuth.getInstance().currentUser
 //        if (currentUser != null) {
-//
 //            val intent = Intent(this, MainActivity::class.java)
 //            startActivity(intent)
 //            finish()
@@ -42,10 +45,21 @@ class LoginActivity : AppCompatActivity() {
 
         if (checkForm()) {
             binding.progressBar.visibility = View.VISIBLE
-            //Firebase auth logic taro sini
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Login gagal. Periksa email dan password Anda.",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-//            kalo udah selesai login ilangin progressbar pake
-//            binding.progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                }
+            }
         }
     }
 
