@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">HabitApp</string>
+    <string name="title_login_page">login\n</string>
+    <string name="sign_in">Sign In</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="enter_your_password">Enter your Password</string>
+    <string name="error_enter_email">Enter your email first!</string>
+    <string name="invalid_email">Invalid email format!</string>
+    <string name="error_passrword">Enter your password first!</string>
+    <string name="password_leght">Password Legth must have at least 6 character</string>
+    <string name="enter_your_name">Enter your name\n</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="error_enter_username">Enter your username first!</string>
+    <string name="passwords_do_not_match">Password do not match!</string>
 </resources>
