@@ -37,7 +37,7 @@ class SignUpActivity : AppCompatActivity() {
         val name = binding.usernameEditText.text.toString()
         val email = binding.emailEditText.text.toString()
         val password = binding.passwordEditText.text.toString()
-        val confirmPassword = binding.confirmPasswordEditText.text.toString()
+
 
         if (checkForm()) {
             binding.progressBar3.visibility = View.VISIBLE
