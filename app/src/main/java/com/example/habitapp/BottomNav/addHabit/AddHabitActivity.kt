@@ -14,6 +14,9 @@ import com.example.habitapp.databinding.ActivityAddHabitBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.HashMap
 
 class AddHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListener {
     private lateinit var binding: ActivityAddHabitBinding
@@ -40,13 +43,27 @@ class AddHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListe
         val minutesFocus = binding.addEdMinutesFocus.text.toString()
         val startTime = binding.addTvStartTime.text.toString()
         val priorityLevel = binding.spPriorityLevel.selectedItem.toString()
-        val id = // tarik id dari firestore
-        if (title.isNotEmpty() && minutesFocus.isNotEmpty() && startTime.isNotEmpty() && priorityLevel.isNotEmpty()) {
-//            tambahin logic ke firebase berdasarkan id user
-//            Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
-//            finish()
+        val user = FirebaseAuth.getInstance().currentUser
+        val userId = user?.uid
+        if (userId != null && title.isNotEmpty() && minutesFocus.isNotEmpty() && startTime.isNotEmpty() && priorityLevel.isNotEmpty()) {
+            val db = FirebaseFirestore.getInstance()
+            val habitData = HashMap<String, Any>()
+            habitData["title"] = title
+            habitData["minutesFocus"] = minutesFocus.toInt()
+            habitData["startTime"] = startTime
+            habitData["priorityLevel"] = priorityLevel
+
+            db.collection(userId)
+                .add(habitData)
+                .addOnSuccessListener { documentReference ->
+                    Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed to add habit: $e", Toast.LENGTH_SHORT).show()
+                }
         } else {
-            Toast.makeText(this, "Habit Cant be Empty", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Habit Can't be Empty", Toast.LENGTH_SHORT).show()
         }
     }
 
