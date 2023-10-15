@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import com.example.habitapp.MainActivity
 import com.example.habitapp.R
-import com.example.habitapp.databinding.ActivityLoginBinding
 import com.example.habitapp.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

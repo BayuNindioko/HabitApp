@@ -13,4 +13,8 @@
     <string name="sign_up">Sign Up</string>
     <string name="error_enter_username">Enter your username first!</string>
     <string name="passwords_do_not_match">Password do not match!</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">My Habit</string>
+    <string name="title_dashboard">Add Habit</string>
+    <string name="title_notifications">Statistic</string>
 </resources>

@@ -15,6 +15,13 @@
         android:theme="@style/Theme.HabitApp"
         tools:targetApi="31">
         <activity
+            android:name=".BottomNav.addHabit.AddHabitActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main" />
+        <activity
             android:name=".Login.SignUpActivity"
             android:exported="false" />
         <activity
@@ -27,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".MainActivity1"
             android:exported="false" />
     </application>
 
