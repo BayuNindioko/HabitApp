@@ -1,5 +1,6 @@
 package com.example.habitapp.BottomNav.addHabit
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -9,6 +10,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import com.dicoding.habitapp.utils.TimePickerFragment
+import com.example.habitapp.MainActivity
 import com.example.habitapp.R
 import com.example.habitapp.databinding.ActivityAddHabitBinding
 import java.text.SimpleDateFormat
@@ -57,6 +59,8 @@ class AddHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListe
                 .add(habitData)
                 .addOnSuccessListener { documentReference ->
                     Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
                     finish()
                 }
                 .addOnFailureListener { e ->
