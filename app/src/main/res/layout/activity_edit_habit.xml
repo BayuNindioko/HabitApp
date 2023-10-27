@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_habit"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ActionBarStyle"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Activity Name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_ed_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="title"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Focus time duration (in minutes)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_ed_minutes_focus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:gravity="top"
+            android:lines="1"
+            android:text="duration"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Spinner
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:id="@+id/sp_priority_level"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:entries="@array/priority_level" />
+
+    <LinearLayout
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            style="@style/Base.Widget.AppCompat.ImageButton"
+            android:id="@+id/imagebutton"
+            android:layout_width="50dp"
+            android:layout_height="48dp"
+            android:onClick="showTimePicker"
+            android:src="@drawable/ic_time" />
+
+        <TextView
+            android:id="@+id/add_tv_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Time" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="300dp"
+        android:layout_marginEnd="32dp"
+        android:text="Edit Habit" />
+
+
+</LinearLayout>

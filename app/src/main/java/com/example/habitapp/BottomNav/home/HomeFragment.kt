@@ -9,9 +9,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dicoding.habitapp.utils.HABIT_ID
 import com.example.habitapp.BottomNav.addHabit.AddHabitActivity
 import com.example.habitapp.Login.SignUpActivity
 import com.example.habitapp.databinding.FragmentMyhabitBinding
+import com.example.habitapp.detail.DetailActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -51,7 +53,12 @@ class HomeFragment : Fragment() {
 
                     val recyclerView = binding.rvHabit
                     val habitAdapter = HabitAdapter(habitList) { habit ->
-
+                        val intent = Intent(context, DetailActivity::class.java)
+                        intent.putExtra("HABIT_TITLE", habit.title)
+                        intent.putExtra("HABIT_START", habit.startTime)
+                        intent.putExtra("HABIT_MINUTE", habit.minutesFocus)
+                        intent.putExtra("HABIT_PRIORITY", habit.priorityLevel)
+                        startActivity(intent)
                     }
                     recyclerView.adapter = habitAdapter
                     recyclerView.layoutManager = LinearLayoutManager(requireContext())
