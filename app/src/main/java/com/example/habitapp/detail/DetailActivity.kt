@@ -4,8 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import com.dicoding.habitapp.utils.HABIT_ID
+import com.example.habitapp.MainActivity
 import com.example.habitapp.databinding.ActivityDetailBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
@@ -16,6 +20,7 @@ class DetailActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        val habitId = intent.getStringExtra("HABIT_ID")
         val habitTitle = intent.getStringExtra("HABIT_TITLE")
         val habitStart = intent.getStringExtra("HABIT_START")
         val habitMinute = intent.getIntExtra("HABIT_MINUTE", 0)
@@ -32,6 +37,7 @@ class DetailActivity : AppCompatActivity() {
 
         binding.floatingActionButton3.setOnClickListener {
             val intent = Intent(this, EditHabitActivity::class.java)
+            intent.putExtra("HABIT_ID",habitId)
             intent.putExtra("HABIT_TITLE",habitTitle)
             intent.putExtra("HABIT_START", habitStart)
             intent.putExtra("HABIT_MINUTE", habitMinute)
@@ -40,7 +46,23 @@ class DetailActivity : AppCompatActivity() {
         }
 
         binding.floatingActionButton2.setOnClickListener {
-            //logix delete disini
+            val user = FirebaseAuth.getInstance().currentUser
+            val userId = user?.uid
+            val firestore = FirebaseFirestore.getInstance()
+            if (habitId != null && userId != null) {
+                firestore.collection(userId)
+                    .document(habitId)
+                    .delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to delete habit: $e", Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
     }
 

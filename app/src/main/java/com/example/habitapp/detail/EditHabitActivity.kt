@@ -1,17 +1,22 @@
 package com.example.habitapp.detail
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.dicoding.habitapp.utils.TimePickerFragment
+import com.example.habitapp.MainActivity
 import com.example.habitapp.R
 import com.example.habitapp.databinding.ActivityDetailBinding
 import com.example.habitapp.databinding.ActivityEditHabitBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class EditHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListener {
     private lateinit var binding: ActivityEditHabitBinding
@@ -22,6 +27,7 @@ class EditHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeList
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        val habitId = intent.getStringExtra("HABIT_ID")
         val habitTitle = intent.getStringExtra("HABIT_TITLE")
         val habitStart = intent.getStringExtra("HABIT_START")
         val habitMinute = intent.getIntExtra("HABIT_MINUTE", 0)
@@ -37,10 +43,37 @@ class EditHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeList
         }
 
         binding.addButton.setOnClickListener {
-            //logic edit disini
-        }
+            val user = FirebaseAuth.getInstance().currentUser
+            val userId = user?.uid
+            val firestore = FirebaseFirestore.getInstance()
+            if (habitId != null && userId != null) {
+                val updatedTitle = binding.addEdTitle.text.toString()
+                val updatedStart = binding.addTvStartTime.text.toString()
+                val updatedMinutes = binding.addEdMinutesFocus.text.toString().toInt()
+                val updatedPriority = binding.spPriorityLevel.selectedItem.toString()
 
-    }
+                val habitData = HashMap<String, Any>()
+                habitData["title"] = updatedTitle
+                habitData["startTime"] = updatedStart
+                habitData["minutesFocus"] = updatedMinutes
+                habitData["priorityLevel"] = updatedPriority
+
+                firestore.collection(userId)
+                    .document(habitId)
+                    .update(habitData)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT)
+                            .show()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to update habit: $e", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

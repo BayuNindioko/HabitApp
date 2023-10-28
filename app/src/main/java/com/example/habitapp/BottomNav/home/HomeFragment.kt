@@ -47,6 +47,7 @@ class HomeFragment : Fragment() {
                     for (document in querySnapshot.documents) {
                         val habit = document.toObject(Habit::class.java)
                         if (habit != null) {
+                            habit.docId = document.id
                             habitList.add(habit)
                         }
                     }
@@ -54,6 +55,7 @@ class HomeFragment : Fragment() {
                     val recyclerView = binding.rvHabit
                     val habitAdapter = HabitAdapter(habitList) { habit ->
                         val intent = Intent(context, DetailActivity::class.java)
+                        intent.putExtra("HABIT_ID", habit.docId)
                         intent.putExtra("HABIT_TITLE", habit.title)
                         intent.putExtra("HABIT_START", habit.startTime)
                         intent.putExtra("HABIT_MINUTE", habit.minutesFocus)
