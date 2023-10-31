@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
-import com.dicoding.habitapp.utils.HABIT_ID
+import com.example.habitapp.countdown.CountDownActivity
 import com.example.habitapp.MainActivity
 import com.example.habitapp.databinding.ActivityDetailBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -63,6 +63,14 @@ class DetailActivity : AppCompatActivity() {
                         Toast.makeText(this, "Failed to delete habit: $e", Toast.LENGTH_SHORT).show()
                     }
             }
+        }
+
+        binding.cdBtn.setOnClickListener {
+            val intent = Intent(this, CountDownActivity::class.java)
+            intent.putExtra("HABIT_ID",habitId)
+            intent.putExtra("HABIT_TITLE",habitTitle)
+            intent.putExtra("HABIT_MINUTE", habitMinute)
+            startActivity(intent)
         }
     }
 
