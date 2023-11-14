@@ -5,6 +5,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.*
+import com.dicoding.habitapp.utils.HABIT_ID
+import com.dicoding.habitapp.utils.HABIT_TITLE
 import com.dicoding.habitapp.utils.NOTIF_UNIQUE_WORK
 import com.example.habitapp.R
 
@@ -31,6 +33,23 @@ class CountDownActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.tv_count_down).text = currentTimeString
         }
 
+        viewModel.eventCountDownFinish.observe(this) { isCountDownFinished ->
+            if (isCountDownFinished) {
+                val data = Data.Builder()
+                    .putString(HABIT_ID, habitId)
+                    .putString(HABIT_TITLE, habitTitle)
+                    .build()
+
+                val workRequest = OneTimeWorkRequest.Builder(NotificationWorker::class.java)
+                    .setInputData(data)
+                    .addTag(NOTIF_UNIQUE_WORK)
+                    .build()
+
+                workManager.enqueueUniqueWork(NOTIF_UNIQUE_WORK, ExistingWorkPolicy.REPLACE, workRequest)
+            }
+            updateButtonState(!isCountDownFinished)
+        }
+
         findViewById<Button>(R.id.btn_start).setOnClickListener {
             viewModel.startTimer()
             updateButtonState(true)
@@ -43,7 +62,6 @@ class CountDownActivity : AppCompatActivity() {
             workManager.cancelAllWorkByTag(NOTIF_UNIQUE_WORK)
         }
     }
-
     private fun updateButtonState(isRunning: Boolean) {
         findViewById<Button>(R.id.btn_start).isEnabled = !isRunning
         findViewById<Button>(R.id.btn_stop).isEnabled = isRunning

@@ -17,4 +17,11 @@
     <string name="title_home">My Habit</string>
     <string name="title_dashboard">Add Habit</string>
     <string name="title_notifications">Statistic</string>
+
+    <!-- Notification -->
+    <string name="pref_key_notify">key_notification</string>
+    <string name="pref_notify_name">Notification</string>
+    <string name="pref_notify_summary">Reminder when countdown has finished.</string>
+    <string name="notify_channel_name">Habit Reminder</string>
+    <string name="notify_content">Time Up!</string>
 </resources>
