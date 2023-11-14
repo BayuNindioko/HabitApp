@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.habitapp.Login.LoginActivity
 import com.example.habitapp.databinding.ActivityMainBinding
+import com.example.habitapp.recomend.RecomendActivity
 import com.example.habitapp.setting.SettingsActivity
 import com.google.firebase.auth.FirebaseAuth
 
@@ -54,6 +55,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.setting -> {
                 val settingIntent = Intent(this, SettingsActivity::class.java)
+                startActivity(settingIntent)
+            }
+            R.id.search -> {
+                val settingIntent = Intent(this, RecomendActivity::class.java)
                 startActivity(settingIntent)
             }
         }
