@@ -48,6 +48,15 @@ class CountDownActivity : AppCompatActivity() {
 
         viewModel.eventCountDownFinish.observe(this) { isCountDownFinished ->
             if (isCountDownFinished) {
+                val data = Data.Builder()
+                    .putString(HABIT_ID, habitId)
+                    .putString(HABIT_TITLE, habitTitle)
+                    .build()
+                val workRequest = OneTimeWorkRequest.Builder(NotificationWorker::class.java)
+                    .setInputData(data)
+                    .addTag(NOTIF_UNIQUE_WORK)
+                    .build()
+                workManager.enqueueUniqueWork(NOTIF_UNIQUE_WORK, ExistingWorkPolicy.REPLACE, workRequest)
                 updateFirestoreOnStop()
             }
             updateButtonState(!isCountDownFinished)
