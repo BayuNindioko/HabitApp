@@ -16,6 +16,9 @@
         android:theme="@style/Theme.HabitApp"
         tools:targetApi="31">
         <activity
+            android:name=".BottomNav.notifications.DetailStatisticActivity"
+            android:exported="false" />
+        <activity
             android:name=".recomend.RecomendActivity"
             android:exported="false" />
         <activity

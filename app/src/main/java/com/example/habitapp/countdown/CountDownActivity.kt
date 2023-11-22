@@ -23,7 +23,7 @@ class CountDownActivity : AppCompatActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    // Store the reference to the habit data in Firestore
+
     private var habitDataRef: DocumentReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

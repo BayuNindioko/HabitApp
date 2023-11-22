@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BottomNav.notifications.DetailStatisticActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ActionBarStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!-- TextView for Added -->
+    <TextView
+        android:id="@+id/text_added"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Added"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:padding="8dp"/>
+
+    <!-- TextView for Total Usage -->
+    <TextView
+        android:id="@+id/text_total_usage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Usage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_added"
+        android:padding="8dp"/>
+
+    <!-- TextView for Usage Type -->
+    <TextView
+        android:id="@+id/text_usage_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Usage Type"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_total_usage"
+        android:padding="8dp"/>
+
+    <!-- TextView for Last Usage -->
+    <TextView
+        android:id="@+id/text_last_usage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Last Usage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_usage_type"
+        android:padding="8dp"/>
+
+    <!-- TextView for Average Duration -->
+    <TextView
+        android:id="@+id/text_avg_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Average Duration"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_last_usage"
+        android:padding="8dp"/>
+
+    <!-- TextView for Time Range -->
+    <TextView
+        android:id="@+id/text_time_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time Range"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_avg_duration"
+        android:padding="8dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
