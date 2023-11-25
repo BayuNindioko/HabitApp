@@ -1,8 +1,10 @@
 package com.example.habitapp.countdown
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.*
@@ -11,10 +13,12 @@ import com.dicoding.habitapp.utils.HABIT_TITLE
 import com.dicoding.habitapp.utils.NOTIF_UNIQUE_WORK
 import com.example.habitapp.R
 import androidx.work.WorkManager
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.ktx.getField
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,8 +27,8 @@ class CountDownActivity : AppCompatActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-
-    private var habitDataRef: DocumentReference? = null
+    private var startTimestamp: Date? = null
+    private var endTimestamp: Date? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +61,7 @@ class CountDownActivity : AppCompatActivity() {
                     .addTag(NOTIF_UNIQUE_WORK)
                     .build()
                 workManager.enqueueUniqueWork(NOTIF_UNIQUE_WORK, ExistingWorkPolicy.REPLACE, workRequest)
-                updateFirestoreOnStop()
+                updateFirestoreOnStop(habitId)
             }
             updateButtonState(!isCountDownFinished)
         }
@@ -65,7 +69,7 @@ class CountDownActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_start).setOnClickListener {
             viewModel.startTimer()
 
-            updateFirestoreOnStart(habitId)
+            updateFirestoreOnStart()
 
             updateButtonState(true)
         }
@@ -73,7 +77,7 @@ class CountDownActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_stop).setOnClickListener {
             viewModel.resetTimer()
 
-            updateFirestoreOnStop()
+            updateFirestoreOnStop(habitId)
 
             updateButtonState(false)
             workManager.cancelAllWorkByTag(NOTIF_UNIQUE_WORK)
@@ -85,30 +89,54 @@ class CountDownActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_stop).isEnabled = isRunning
     }
 
-    private fun updateFirestoreOnStart(habitId: String?) {
+    private fun updateFirestoreOnStart() {
+        startTimestamp = com.google.firebase.Timestamp.now().toDate()
+    }
+
+    private fun updateFirestoreOnStop(habitId: String?) {
+        endTimestamp = com.google.firebase.Timestamp.now().toDate()
         val user = auth.currentUser
-        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-        val currentDate = dateFormat.format(Date())
 
         habitId?.let {
             user?.uid?.let { userId ->
-                val historyRef = firestore.collection("History").document(userId)
+                val habitDataRef = firestore.collection("Users").document(userId)
 
-                val habitData = hashMapOf(
-                    "startTimestamp" to FieldValue.serverTimestamp(),
-                    "endTimestamp" to null,
-                    "habitID" to habitId
-                )
+                habitDataRef.get()
+                    .addOnSuccessListener { habitDocSnapshot ->
+                        val data = habitDocSnapshot.data
+                        val habitStatistic = data?.get(habitId) as? List<Map<String, Any>>
+                        val previousAdded: Any? = if (habitStatistic != null) {
+                            habitStatistic?.get(0)?.get("added")
+                        } else {
+                            (data?.get(habitId) as? Map<*, *>)?.get("added")
+                        }
+                        val previousAverageDuration = (data?.get(habitId) as? Map<*, *>)?.get("averageDuration") as? Long
+                        val previousTotalUsage = (data?.get(habitId) as? Map<*, *>)?.get("totalUsage") as? Long
 
-                historyRef.collection(currentDate).add(habitData)
-                    .addOnSuccessListener { documentReference ->
-                        habitDataRef = documentReference
+                        val durationInMillis =
+                            endTimestamp?.time?.minus(startTimestamp?.time ?: 0) ?: 0
+                        val newAverageDuration = if (previousAverageDuration == null) {
+                            durationInMillis
+                        } else {
+                            (previousAverageDuration + durationInMillis) / 2
+                        }
+
+                        val newTotalUsage = if (previousTotalUsage == null) {
+                            1
+                        } else {
+                            previousTotalUsage + 1
+                        }
+
+                        val habitData = hashMapOf(
+                            "added" to previousAdded,
+                            "averageDuration" to newAverageDuration,
+                            "lastUsage" to endTimestamp,
+                            "totalUsage" to newTotalUsage
+                        )
+
+                        habitDataRef.update(habitId, habitData)
                     }
             }
         }
-    }
-
-    private fun updateFirestoreOnStop() {
-        habitDataRef?.update("endTimestamp", FieldValue.serverTimestamp())
     }
 }

@@ -10,6 +10,7 @@ import com.example.habitapp.MainActivity
 import com.example.habitapp.R
 import com.example.habitapp.databinding.ActivityRecomendBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RecomendActivity : AppCompatActivity() {
@@ -86,13 +87,28 @@ class RecomendActivity : AppCompatActivity() {
     private fun addHabitToFirestore(habit: Habit, userId: String) {
         val firestore = FirebaseFirestore.getInstance()
         val userHabitsCollection = firestore.collection(userId)
+        val userHistory = firestore.collection("Users").document(userId)
+
+        val currentTime = com.google.firebase.Timestamp.now().toDate()
+        val habitData = hashMapOf(
+            "added" to currentTime,
+            "averageDuration" to null,
+            "lastUsage" to null,
+            "totalUsage" to 0
+        )
 
         userHabitsCollection.add(habit)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+            .addOnSuccessListener { userHabitDocRef ->
+                userHistory.update(userHabitDocRef.id, FieldValue.arrayUnion(habitData))
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to update habit data", Toast.LENGTH_SHORT).show()
+                    }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to add habit", Toast.LENGTH_SHORT).show()

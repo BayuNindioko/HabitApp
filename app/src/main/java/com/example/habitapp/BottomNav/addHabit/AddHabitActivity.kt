@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.HashMap
 
@@ -47,21 +48,39 @@ class AddHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListe
         val priorityLevel = binding.spPriorityLevel.selectedItem.toString()
         val user = FirebaseAuth.getInstance().currentUser
         val userId = user?.uid
+
         if (userId != null && title.isNotEmpty() && minutesFocus.isNotEmpty() && startTime.isNotEmpty() && priorityLevel.isNotEmpty()) {
             val db = FirebaseFirestore.getInstance()
-            val habitData = HashMap<String, Any>()
-            habitData["title"] = title
-            habitData["minutesFocus"] = minutesFocus.toInt()
-            habitData["startTime"] = startTime
-            habitData["priorityLevel"] = priorityLevel
+            val habitData = hashMapOf(
+                "title" to title,
+                "minutesFocus" to minutesFocus.toInt(),
+                "startTime" to startTime,
+                "priorityLevel" to priorityLevel
+            )
+
+            val currentTime = com.google.firebase.Timestamp.now().toDate()
+            val additionalData = hashMapOf(
+                "added" to currentTime,
+                "averageDuration" to null,
+                "lastUsage" to null,
+                "totalUsage" to null
+            )
 
             db.collection(userId)
                 .add(habitData)
                 .addOnSuccessListener { documentReference ->
-                    Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    db.collection("Users")
+                        .document(userId)
+                        .update(documentReference.id, FieldValue.arrayUnion(additionalData))
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Habit added successfully", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Failed to update user data: $e", Toast.LENGTH_SHORT).show()
+                        }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Failed to add habit: $e", Toast.LENGTH_SHORT).show()

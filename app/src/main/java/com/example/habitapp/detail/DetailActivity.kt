@@ -9,6 +9,7 @@ import com.example.habitapp.countdown.CountDownActivity
 import com.example.habitapp.MainActivity
 import com.example.habitapp.databinding.ActivityDetailBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class DetailActivity : AppCompatActivity() {
@@ -49,18 +50,37 @@ class DetailActivity : AppCompatActivity() {
             val user = FirebaseAuth.getInstance().currentUser
             val userId = user?.uid
             val firestore = FirebaseFirestore.getInstance()
+
             if (habitId != null && userId != null) {
-                firestore.collection(userId)
-                    .document(habitId)
-                    .delete()
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                val habitRef = firestore.collection(userId).document(habitId)
+
+                habitRef.get()
+                    .addOnSuccessListener { habitDocSnapshot ->
+                        val habitData = habitDocSnapshot.data
+
+                        if (habitData != null) {
+                            habitRef.delete()
+                                .addOnSuccessListener {
+                                    val userHabitRef = firestore.collection("Users").document(userId)
+
+                                    userHabitRef.update(habitId, FieldValue.delete())
+                                        .addOnSuccessListener {
+                                            Toast.makeText(this, "Habit deleted successfully", Toast.LENGTH_SHORT).show()
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Toast.makeText(this, "Failed to delete habit from Users collection: $e", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this, "Failed to delete habit: $e", Toast.LENGTH_SHORT).show()
+                                }
+                        }
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to delete habit: $e", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Failed to retrieve habit data: $e", Toast.LENGTH_SHORT).show()
                     }
             }
         }
