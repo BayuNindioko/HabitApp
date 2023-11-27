@@ -2,6 +2,7 @@ package com.example.habitapp.BottomNav.notifications
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,70 +32,56 @@ class NotificationsFragment : Fragment() {
 
         if (userId != null) {
             val firestore = FirebaseFirestore.getInstance()
-            val habitsCollection = firestore.collection("users").document(userId)
+            val userDocRef = firestore.collection("Users").document(userId)
 
-            habitsCollection.get()
+            userDocRef.get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
                         val habitList = mutableListOf<Statistic>()
 
-                        val data = documentSnapshot.data?.toMutableMap()
-                        data?.remove("nama")
+                        val userData = documentSnapshot.data
+                        userData?.forEach { (key, value) ->
+                            if (key != "nama" && value is Map<*, *>) {
+                                val title = value["title"] as? String
+                                val added = value["added"] as? Timestamp
+                                val averageDuration = value["averageDuration"] as? Long
+                                val lastUsage = value["lastUsage"] as? Timestamp
+                                val totalUsage = value["totalUsage"] as? Long
 
-                        val habitIdTitleList = mutableListOf<Pair<String, String>>()
+                                Log.d("NotificationsFragment", "Habit ID: $key, Title: $title, Added: $added, Avg Duration: $averageDuration, Last Usage: $lastUsage, Total Usage: $totalUsage")
 
-                        for ((habitId, _) in data ?: emptyMap()) {
-                            firestore.collection("Users").document(userId)
-                                .collection(habitId.toString()).document(habitId.toString())
-                                .get()
-                                .addOnSuccessListener { habitDataSnapshot ->
-                                    if (habitDataSnapshot.exists()) {
-                                        val title = habitDataSnapshot.getString("title")
-                                        habitIdTitleList.add(Pair(habitId.toString(), title ?: ""))
-
-                                        if (habitIdTitleList.size == data?.size ?: 0) {
-                                            for ((habitId, title) in habitIdTitleList) {
-                                                firestore.collection("Users").document(userId)
-                                                    .get()
-                                                    .addOnSuccessListener { userDataSnapshot ->
-                                                        if (userDataSnapshot.exists()) {
-                                                            val habitData = userDataSnapshot.data?.get(habitId) as? Map<*, *>
-
-                                                            val habit = habitData?.let {
-                                                                Statistic(
-                                                                    habitId,
-                                                                    title,
-                                                                    it["added"] as Timestamp,
-                                                                    (it["averageDuration"] as? Long) ?: 0,
-                                                                    it["lastUsage"] as Timestamp,
-                                                                    (it["totalUsage"] as? Long) ?: 0
-                                                                )
-                                                            }
-
-                                                            habit?.habitId = habitId
-                                                            habit?.let { habitList.add(it) }
-
-                                                            val recyclerView = binding.rvStatistic
-                                                            val statisticAdapter = StatisticAdapter(habitList) { habit ->
-                                                                val intent = Intent(context, DetailStatisticActivity::class.java)
-                                                                intent.putExtra("HABIT_ID", habit.habitId)
-                                                                intent.putExtra("HABIT_TITLE", habit.title)
-                                                                intent.putExtra("HABIT_Add", habit.added)
-                                                                intent.putExtra("HABIT_Avg", habit.averageDuration)
-                                                                intent.putExtra("HABIT_Last", habit.lastUsage)
-                                                                intent.putExtra("HABIT_Total", habit.totalUsage)
-                                                                startActivity(intent)
-                                                            }
-                                                            recyclerView.adapter = statisticAdapter
-                                                            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                                                        }
-                                                    }
-                                            }
-                                        }
-                                    }
+                                if (title != null && added != null && averageDuration != null &&
+                                    lastUsage != null && totalUsage != null
+                                ) {
+                                    val statistic = Statistic(
+                                        key, // key here is habitId
+                                        title,
+                                        added,
+                                        averageDuration,
+                                        lastUsage,
+                                        totalUsage
+                                    )
+                                    habitList.add(statistic)
                                 }
+                            }
                         }
+
+                        val recyclerView = binding.rvStatistic
+                        val statisticAdapter = StatisticAdapter(habitList) { habit ->
+                            val intent = Intent(context, DetailStatisticActivity::class.java)
+                            intent.putExtra("HABIT_TITLE", habit.title)
+                            intent.putExtra("HABIT_Add", habit.added)
+                            intent.putExtra("HABIT_Avg", habit.averageDuration)
+                            intent.putExtra("HABIT_Last", habit.lastUsage)
+                            intent.putExtra("HABIT_Total", habit.totalUsage)
+                            startActivity(intent)
+                        }
+                        recyclerView.adapter = statisticAdapter
+                        recyclerView.layoutManager = LinearLayoutManager(requireContext())
                     }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("Firestore", "Error getting document: $exception")
                 }
         }
 
