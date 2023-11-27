@@ -62,11 +62,34 @@ class EditHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeList
                     .document(habitId)
                     .update(habitData)
                     .addOnSuccessListener {
-                        Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT)
-                            .show()
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        firestore.collection("Users")
+                            .document(userId)
+                            .get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                if (documentSnapshot.exists()) {
+                                    val userData = documentSnapshot.data
+                                    if (userData != null) {
+                                        val habitIdData = (userData[habitId] as? Map<String, Any>)?.toMutableMap()
+                                        if (habitIdData != null) {
+                                            habitIdData["title"] = updatedTitle
+
+                                            firestore.collection("Users")
+                                                .document(userId)
+                                                .update(habitId, habitIdData)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(this, "Habit updated successfully", Toast.LENGTH_SHORT)
+                                                        .show()
+                                                    val intent = Intent(this, MainActivity::class.java)
+                                                    startActivity(intent)
+                                                    finish()
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Toast.makeText(this, "Failed to update habit: $e", Toast.LENGTH_SHORT).show()
+                                                }
+                                        }
+                                    }
+                                }
+                            }
                     }
                     .addOnFailureListener { e ->
                         Toast.makeText(this, "Failed to update habit: $e", Toast.LENGTH_SHORT).show()
