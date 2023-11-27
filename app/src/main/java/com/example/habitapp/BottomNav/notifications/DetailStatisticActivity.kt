@@ -32,7 +32,7 @@ class DetailStatisticActivity : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("MMM d, yyyy, HH:mm:ss", Locale.getDefault())
         val addedString = addedDate?.let { dateFormat.format(it) } ?: "N/A"
         val lastUsageString = lastUsageDate?.let { dateFormat.format(it) } ?: "N/A"
-
+        binding.title.text = habitTitle
         binding.textAdded.text = "Added: $addedString"
         binding.textAvgDuration.text = "Average Duration: $avgDuration"
         binding.textLastUsage.text = "Last Usage: $lastUsageString"
