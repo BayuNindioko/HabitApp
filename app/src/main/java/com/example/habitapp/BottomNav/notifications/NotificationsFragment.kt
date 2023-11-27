@@ -48,13 +48,11 @@ class NotificationsFragment : Fragment() {
                                 val lastUsage = value["lastUsage"] as? Timestamp
                                 val totalUsage = value["totalUsage"] as? Long
 
-                                Log.d("NotificationsFragment", "Habit ID: $key, Title: $title, Added: $added, Avg Duration: $averageDuration, Last Usage: $lastUsage, Total Usage: $totalUsage")
-
                                 if (title != null && added != null && averageDuration != null &&
                                     lastUsage != null && totalUsage != null
                                 ) {
                                     val statistic = Statistic(
-                                        key, // key here is habitId
+                                        key,
                                         title,
                                         added,
                                         averageDuration,
@@ -70,9 +68,9 @@ class NotificationsFragment : Fragment() {
                         val statisticAdapter = StatisticAdapter(habitList) { habit ->
                             val intent = Intent(context, DetailStatisticActivity::class.java)
                             intent.putExtra("HABIT_TITLE", habit.title)
-                            intent.putExtra("HABIT_Add", habit.added)
+                            intent.putExtra("HABIT_Add", habit.added?.toDate())
                             intent.putExtra("HABIT_Avg", habit.averageDuration)
-                            intent.putExtra("HABIT_Last", habit.lastUsage)
+                            intent.putExtra("HABIT_Last", habit.lastUsage?.toDate())
                             intent.putExtra("HABIT_Total", habit.totalUsage)
                             startActivity(intent)
                         }
