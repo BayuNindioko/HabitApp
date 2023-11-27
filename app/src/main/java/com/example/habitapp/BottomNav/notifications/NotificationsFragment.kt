@@ -1,19 +1,13 @@
-package com.example.habitapp.BottomNav.home
+package com.example.habitapp.BottomNav.notifications
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.habitapp.BottomNav.notifications.DetailStatisticActivity
-import com.example.habitapp.BottomNav.notifications.Statistic
-import com.example.habitapp.BottomNav.notifications.StatisticAdapter
 import com.example.habitapp.databinding.FragmentNotificationsBinding
-import com.example.habitapp.detail.DetailActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -50,8 +44,8 @@ class NotificationsFragment : Fragment() {
                         val habitIdTitleList = mutableListOf<Pair<String, String>>()
 
                         for ((habitId, _) in data ?: emptyMap()) {
-                            firestore.collection("users").document(userId)
-                                .collection(habitId.toString()).document("habitData")
+                            firestore.collection("Users").document(userId)
+                                .collection(habitId.toString()).document(habitId.toString())
                                 .get()
                                 .addOnSuccessListener { habitDataSnapshot ->
                                     if (habitDataSnapshot.exists()) {
