@@ -1,6 +1,12 @@
 package com.example.habitapp.BottomNav.notifications
 
+import com.google.firebase.Timestamp
+
 data class Statistic (
-//    val variabel : String,
-    val data : String, //kurang lebih kaya gini, harus sama sama di firestore namanya
+    var habitId:String ?=null,
+    val title:String ?=null,
+    val added: Timestamp ?= null,
+    val averageDuration: Long ?= null,
+    val lastUsage: Timestamp ?= null,
+    val totalUsage: Long ?= null,
 )
