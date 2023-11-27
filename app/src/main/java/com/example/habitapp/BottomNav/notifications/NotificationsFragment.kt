@@ -1,3 +1,5 @@
+package com.example.habitapp.BottomNav.home
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
