@@ -105,6 +105,13 @@ class CountDownActivity : AppCompatActivity() {
                     .addOnSuccessListener { habitDocSnapshot ->
                         val data = habitDocSnapshot.data
                         val habitStatistic = data?.get(habitId) as? List<Map<String, Any>>
+
+                        val previousTitle: Any? = if (habitStatistic != null) {
+                            habitStatistic?.get(0)?.get("title")
+                        } else {
+                            (data?.get(habitId) as? Map<*, *>)?.get("title")
+                        }
+
                         val previousAdded: Any? = if (habitStatistic != null) {
                             habitStatistic?.get(0)?.get("added")
                         } else {
@@ -128,6 +135,7 @@ class CountDownActivity : AppCompatActivity() {
                         }
 
                         val habitData = hashMapOf(
+                            "title" to previousTitle,
                             "added" to previousAdded,
                             "averageDuration" to newAverageDuration,
                             "lastUsage" to endTimestamp,

@@ -91,10 +91,11 @@ class RecomendActivity : AppCompatActivity() {
 
         val currentTime = com.google.firebase.Timestamp.now().toDate()
         val habitData = hashMapOf(
+            "title" to habit.title,
             "added" to currentTime,
             "averageDuration" to null,
             "lastUsage" to null,
-            "totalUsage" to 0
+            "totalUsage" to null
         )
 
         userHabitsCollection.add(habit)

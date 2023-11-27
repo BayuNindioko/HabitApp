@@ -60,6 +60,7 @@ class AddHabitActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListe
 
             val currentTime = com.google.firebase.Timestamp.now().toDate()
             val additionalData = hashMapOf(
+                "title" to title,
                 "added" to currentTime,
                 "averageDuration" to null,
                 "lastUsage" to null,
