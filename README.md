@@ -1,12 +1,12 @@
 # HabitApp
 
-Link Video youtube
+Link Video Demo Aplikasi <br>
 https://youtu.be/Peb4Srx2mCk?si=2SUS_Mo7DMXlc-F4
 
-Link Figma
+Link Figma <br>
 https://www.figma.com/file/0GaIH7PN13cQE4K9HcCPng/habit-app?type=design&node-id=0%3A1&mode=design&t=cgymhpcrTm9HwLZP-1
 
-Link Github
+Link Github <br>
 https://github.com/BayuNindioko/HabitApp
 
 Cara membuka project
